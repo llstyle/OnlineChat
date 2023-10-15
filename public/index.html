@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    html, body {
+        margin: 0;
+    }
+    * {
+        box-sizing: border-box;
+    }
+    .li {
+        width: 100%;
+        padding: 20px;
+        font-size: large;
+        border: 1px solid black;
+        margin-top: 1%;
+    }
+</style>
+<body>
+    <h3>Чат в реальном времени на socket.io</h3>
+    <div style="width: 100%;padding: 20px;">
+        <div  id="messages"></div>
+    </div>
+    <div style="width: 100%;position: fixed;bottom: 0;">
+        <form id="form" style="width: 100%;display: flex;">
+            <input type="text" id="input" style="width: 100%;padding: 8px;" placeholder="Напишите что-то">
+            <button type="submit" style="width: 100px;background-color: white;border: 1px solid black;">Отправить</button>
+        </form>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  if(!localStorage.getItem("Name")) {
+    localStorage.setItem("Name", prompt("Введи Имя"))
+  }
+
+  const name = localStorage.getItem("Name")
+
+  const socket = io();
+
+  const form = document.getElementById('form');
+  const input = document.getElementById('input');
+  const messages = document.getElementById('messages');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    console.log(input.value);
+    if (input.value) {
+      socket.emit('chat message', input.value, name);
+      input.value = '';
+    }
+  });
+
+  socket.on('chat message', function(msg, name) {
+    var item = document.createElement('div');
+    item.className = 'li'
+    item.textContent = `${name} | ${msg}`;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  })
+</script>
+</html>
